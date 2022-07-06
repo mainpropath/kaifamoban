@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ActivityMapper">
+
+    <select id="selectActivityByActivityAdmin" resultType="Activity">
+        select *
+        from t_activity
+        where activity_admin = #{activityAdmin};
+    </select>
+
+    <insert id="insertActivity">
+        insert into t_activity
+            value (null,#{activityName},
+            #{activityAdmin},
+            #{activityDate},
+            #{activityStartTime},
+            #{activityPeople},
+            #{activityType},
+            #{activityContactWay},
+            #{activityDescription},
+            #{activityAdminName},
+            0,0,
+            #{activityAddress},
+            #{activityQW});
+    </insert>
+
+    <select id="selectAllActivity" resultType="Activity">
+        select *
+        from t_activity;
+    </select>
+
+    <select id="selectActivityByActivityId" resultType="Activity">
+        select *
+        from t_activity
+        where activity_id = #{id};
+    </select>
+
+    <delete id="deleteActivityById">
+        delete
+        from t_activity
+        where activity_id = #{id};
+    </delete>
+
+    <update id="updateActivity">
+        update t_activity
+        <trim prefix="set" suffix="where activity_id=#{activityId}" suffixOverrides=",">
+            <if test="activityName!=null and activityName!=''">
+                activity_name=#{activityName},
+            </if>
+            <if test="activityStartTime!=null and activityStartTime!=''">
+                activity_start_time=#{activityStartTime},
+            </if>
+            <if test="activityPeople!=null and activityPeople!=''">
+                activity_people=#{activityPeople},
+            </if>
+            <if test="activityType!=null and activityType!=''">
+                activity_type=#{activityType},
+            </if>
+            <if test="activityContactWay!=null and activityContactWay!=''">
+                activity_contact_way=#{activityContactWay},
+            </if>
+            <if test="activityDescription!=null and activityDescription!=''">
+                activity_description=#{activityDescription},
+            </if>
+            <if test="activityAddress!=null and activityAddress!=''">
+                activity_address=#{activityAddress},
+            </if>
+            <if test="activityQW!=null and activityQW!=''">
+                activity_q_w=#{activityQW},
+            </if>
+        </trim>
+    </update>
+
+    <update id="updateActivityAdminNickNameByAdmin">
+        update t_activity
+        set activity_admin_name = #{nickName}
+        where activity_admin = #{userEmail};
+    </update>
+
+    <update id="updateActivityStar">
+        update t_activity
+        set activity_star=activity_star + 1
+        where activity_id = #{id};
+    </update>
+
+    <update id="reduceActivityStar">
+        update t_activity
+        set activity_star=activity_star - 1
+        where activity_id = #{id};
+    </update>
+
+    <update id="updateActivityVisit">
+        update t_activity
+        set activity_visit=activity_visit + 1
+        where activity_id = #{id};
+    </update>
+
+    <select id="selectActivityByDynamicQuery" parameterType="String" resultType="Activity">
+        select * from t_activity
+        <trim prefix="where" prefixOverrides="and">
+            <if test="activityType != null and activityType != ''">
+                and activity_type = #{activityType}
+            </if>
+            <if test="activityDate != null and activityDate.length > 0 ">
+                and activity_date in
+                <foreach collection="activityDate" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </trim>
+        order by activity_id DESC
+    </select>
+
+</mapper>
